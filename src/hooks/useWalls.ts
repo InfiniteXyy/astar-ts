@@ -11,9 +11,9 @@ export function useWalls() {
 
   const setExampleWalls = useCallback(() => {
     const newWalls = new Set<string>();
-    for (let i = 5; i < COLS - 5; i++) {
+    for (let i = 5; i < COLS - 6; i++) {
       for (let j = 0; j < ROWS - 4; j++) {
-        newWalls.add(`${i},${j}`);
+        if (j !== ROWS - 10) newWalls.add(`${i},${j}`);
       }
     }
     setWalls(newWalls);

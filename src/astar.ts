@@ -62,6 +62,11 @@ export class AStarPathfinder {
           continue;
         }
 
+        // Prevent overlapping paths
+        if (this.positionInPath(currentNode, newPos)) {
+          continue;
+        }
+
         const segmentLength = currentNode.segmentLength + 1;
 
         const neighborNode = new Node(
@@ -84,16 +89,27 @@ export class AStarPathfinder {
       } else {
         // Check if we can change direction
         if (currentNode.segmentLength >= this.minSegmentLength) {
-          // Move MinSegmentLength units in the new direction
+          // Prevent moving in the opposite direction
+          if (this.isOppositeDirection(direction, currentNode.direction)) {
+            continue;
+          }
+
+          // Move minSegmentLength units in the new direction
           let canMove = true;
           let newPos = currentNode.position;
 
+          // Store positions along the way to check for overlaps
+          const positionsToCheck: Vector2[] = [];
+
           for (let i = 1; i <= this.minSegmentLength; i++) {
             newPos = newPos.add(direction);
-            if (!this.isWalkable(newPos)) {
+
+            // Check for walls or overlapping paths
+            if (!this.isWalkable(newPos) || this.positionInPath(currentNode, newPos)) {
               canMove = false;
               break;
             }
+            positionsToCheck.push(new Vector2(newPos.x, newPos.y));
           }
 
           if (!canMove) {
@@ -121,6 +137,22 @@ export class AStarPathfinder {
         }
       }
     }
+  }
+
+  // Checks if a position is already in the path leading up to currentNode
+  positionInPath(node: Node | null, position: Vector2): boolean {
+    while (node !== null) {
+      if (node.position.equals(position)) {
+        return true;
+      }
+      node = node.fatherNode;
+    }
+    return false;
+  }
+
+  // Checks if two directions are opposite
+  isOppositeDirection(dir1: Vector2, dir2: Vector2): boolean {
+    return dir1.x === -dir2.x && dir1.y === -dir2.y;
   }
 
   // Retraces the path from the end node to the start node
