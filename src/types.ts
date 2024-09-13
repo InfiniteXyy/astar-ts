@@ -23,14 +23,25 @@ export class Vector2 {
 
 // Represents a node in the pathfinding grid
 export class Node {
-  constructor(
-    public position: Vector2,
-    public fatherNode: Node | null,
-    public gCost: number, // Cost from start to current node
-    public hCost: number, // Heuristic cost to target
-    public direction: Vector2, // Movement direction from parent
-    public segmentLength: number // Length of current segment
-  ) {}
+  public position: Vector2;
+  public fatherNode: Node | null;
+  /** Cost from start to current node */
+  public gCost: number;
+  /** Heuristic cost to target */
+  public hCost: number;
+  /** Movement direction from parent */
+  public direction: Vector2;
+  /** Length of current segment */
+  public segmentLength: number;
+
+  constructor(props: Pick<Node, 'position' | 'fatherNode' | 'gCost' | 'hCost' | 'direction' | 'segmentLength'>) {
+    this.position = props.position;
+    this.fatherNode = props.fatherNode;
+    this.gCost = props.gCost;
+    this.hCost = props.hCost;
+    this.direction = props.direction;
+    this.segmentLength = props.segmentLength;
+  }
 
   // Total cost (F = G + H)
   get fCost(): number {
@@ -38,6 +49,6 @@ export class Node {
   }
 
   clone(): Node {
-    return new Node(this.position, this.fatherNode, this.gCost, this.hCost, this.direction, this.segmentLength);
+    return new Node(this);
   }
 }
